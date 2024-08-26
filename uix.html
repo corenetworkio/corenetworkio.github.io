@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D-Physik-Test</title>
+    <title>3D-Physik-Test mit Debugging</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
@@ -14,15 +14,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ammo.js/0.0.10/ammo.js"></script>
 <script>
+    console.log("Starte die Initialisierung...");
+
     let scene, camera, renderer, world;
     let ball, ground;
 
     Ammo().then(() => {
+        console.log("Ammo.js wurde erfolgreich geladen und initialisiert.");
         init();
         animate();
+    }).catch(error => {
+        console.error("Fehler beim Laden von Ammo.js:", error);
     });
 
     function init() {
+        console.log("Initialisierung der Szene...");
+
         // Szene erstellen
         scene = new THREE.Scene();
 
@@ -40,6 +47,8 @@
         light.position.set(5, 10, 7.5).normalize();
         scene.add(light);
 
+        console.log("Physik-Welt wird erstellt...");
+
         // Physik-Welt erstellen
         const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
         const dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration);
@@ -48,6 +57,8 @@
         world = new Ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
         world.setGravity(new Ammo.btVector3(0, -9.8, 0));
 
+        console.log("Erstellung von Boden und Ball...");
+
         // Boden erstellen
         const planeGeometry = new THREE.PlaneGeometry(100, 100);
         const planeMaterial = new THREE.MeshPhongMaterial({ color: 0x228B22 });
@@ -55,7 +66,6 @@
         ground.rotation.x = - Math.PI / 2;
         scene.add(ground);
 
-        // Physik für den Boden
         const groundShape = new Ammo.btBoxShape(new Ammo.btVector3(50, 1, 50));
         const groundTransform = new Ammo.btTransform();
         groundTransform.setIdentity();
@@ -72,7 +82,6 @@
         ball = new THREE.Mesh(ballGeometry, ballMaterial);
         scene.add(ball);
 
-        // Physik für die Kugel
         const ballShape = new Ammo.btSphereShape(1);
         const ballTransform = new Ammo.btTransform();
         ballTransform.setIdentity();
@@ -84,6 +93,8 @@
         const ballRigidBody = new Ammo.btRigidBody(ballRigidBodyInfo);
         ball.userData.physicsBody = ballRigidBody;
         world.addRigidBody(ballRigidBody);
+
+        console.log("Szene erfolgreich initialisiert.");
 
         // Größenänderung des Fensters behandeln
         window.addEventListener('resize', onWindowResize, false);
