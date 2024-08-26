@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D-Spiel für Mobilgeräte</title>
+    <title>Fortgeschrittenes 3D-Spiel für Mobilgeräte</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
@@ -12,93 +12,180 @@
 <body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ammo.js/0.0.10/ammo.js"></script>
 <script>
-    // Szene, Kamera und Renderer erstellen
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    // Initialisierung
+    let scene, camera, renderer, clock, world, ball, controls;
+    let obstacles = [];
 
-    // Eine Kugel erstellen
-    const geometry = new THREE.SphereGeometry(1, 32, 32);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const ball = new THREE.Mesh(geometry, material);
-    scene.add(ball);
+    // Physik-Engine (Ammo.js) initialisieren
+    Ammo().then(() => {
+        init();
+        animate();
+    });
 
-    // Boden erstellen
-    const planeGeometry = new THREE.PlaneGeometry(100, 100);
-    const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 });
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.rotation.x = - Math.PI / 2;
-    plane.position.y = -1;
-    scene.add(plane);
+    function init() {
+        // Szene erstellen
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb);
 
-    // Hindernisse erstellen
-    const obstacleGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const obstacleMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const obstacles = [];
-    for (let i = 0; i < 5; i++) {
-        const obstacle = new THREE.Mesh(obstacleGeometry, obstacleMaterial);
-        obstacle.position.set(Math.random() * 20 - 10, 0, Math.random() * 20 - 10);
-        scene.add(obstacle);
-        obstacles.push(obstacle);
+        // Kamera erstellen
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 5, 10);
+
+        // Renderer erstellen
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Licht hinzufügen
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 10, 7.5).normalize();
+        scene.add(light);
+
+        // Physik-Welt erstellen
+        const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
+        const dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration);
+        const broadphase = new Ammo.btDbvtBroadphase();
+        const solver = new Ammo.btSequentialImpulseConstraintSolver();
+        world = new Ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+        world.setGravity(new Ammo.btVector3(0, -9.8, 0));
+
+        // Boden erstellen
+        createPlane();
+
+        // Kugel erstellen
+        ball = createBall();
+        scene.add(ball);
+
+        // Hindernisse erstellen
+        for (let i = 0; i < 5; i++) {
+            const obstacle = createObstacle();
+            scene.add(obstacle);
+            obstacles.push(obstacle);
+        }
+
+        // Uhr für die Animationen
+        clock = new THREE.Clock();
+
+        // Gyroskop-Steuerung
+        window.addEventListener('deviceorientation', handleOrientation, true);
+
+        // Größenänderung des Fensters behandeln
+        window.addEventListener('resize', onWindowResize, false);
     }
 
-    // Kamera-Position
-    camera.position.z = 5;
+    function createPlane() {
+        const planeGeometry = new THREE.PlaneGeometry(100, 100);
+        const planeMaterial = new THREE.MeshPhongMaterial({ color: 0x228B22 });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.rotation.x = - Math.PI / 2;
+        scene.add(plane);
 
-    // Touch-Input Variablen
-    let touchX = 0;
-    let touchY = 0;
+        // Physik für den Boden
+        const transform = new Ammo.btTransform();
+        transform.setIdentity();
+        transform.setOrigin(new Ammo.btVector3(0, -1, 0));
 
-    // Animation
+        const motionState = new Ammo.btDefaultMotionState(transform);
+        const planeShape = new Ammo.btBoxShape(new Ammo.btVector3(50, 1, 50));
+        const localInertia = new Ammo.btVector3(0, 0, 0);
+
+        const rigidBodyInfo = new Ammo.btRigidBodyConstructionInfo(0, motionState, planeShape, localInertia);
+        const rigidBody = new Ammo.btRigidBody(rigidBodyInfo);
+
+        world.addRigidBody(rigidBody);
+    }
+
+    function createBall() {
+        const ballGeometry = new THREE.SphereGeometry(1, 32, 32);
+        const ballMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+        const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+
+        // Physik für die Kugel
+        const transform = new Ammo.btTransform();
+        transform.setIdentity();
+        transform.setOrigin(new Ammo.btVector3(0, 1, 0));
+
+        const motionState = new Ammo.btDefaultMotionState(transform);
+        const ballShape = new Ammo.btSphereShape(1);
+        const localInertia = new Ammo.btVector3(0, 0, 0);
+        ballShape.calculateLocalInertia(1, localInertia);
+
+        const rigidBodyInfo = new Ammo.btRigidBodyConstructionInfo(1, motionState, ballShape, localInertia);
+        const rigidBody = new Ammo.btRigidBody(rigidBodyInfo);
+        ball.userData.physicsBody = rigidBody;
+
+        world.addRigidBody(rigidBody);
+
+        return ball;
+    }
+
+    function createObstacle() {
+        const obstacleGeometry = new THREE.BoxGeometry(2, 2, 2);
+        const obstacleMaterial = new THREE.MeshPhongMaterial({ color: 0x0000ff });
+        const obstacle = new THREE.Mesh(obstacleGeometry, obstacleMaterial);
+        obstacle.position.set(Math.random() * 20 - 10, 1, Math.random() * 20 - 10);
+
+        // Physik für Hindernisse
+        const transform = new Ammo.btTransform();
+        transform.setIdentity();
+        transform.setOrigin(new Ammo.btVector3(obstacle.position.x, obstacle.position.y, obstacle.position.z));
+
+        const motionState = new Ammo.btDefaultMotionState(transform);
+        const boxShape = new Ammo.btBoxShape(new Ammo.btVector3(1, 1, 1));
+        const localInertia = new Ammo.btVector3(0, 0, 0);
+
+        const rigidBodyInfo = new Ammo.btRigidBodyConstructionInfo(0, motionState, boxShape, localInertia);
+        const rigidBody = new Ammo.btRigidBody(rigidBodyInfo);
+        obstacle.userData.physicsBody = rigidBody;
+
+        world.addRigidBody(rigidBody);
+
+        return obstacle;
+    }
+
+    function handleOrientation(event) {
+        const gamma = event.gamma; // Links/Rechts Neigung (von -90 bis 90)
+        const beta = event.beta; // Vorwärts/Rückwärts Neigung (von -180 bis 180)
+
+        const forceX = gamma ? gamma / 90 * 10 : 0;
+        const forceZ = beta ? beta / 180 * 10 : 0;
+
+        const physicsBody = ball.userData.physicsBody;
+        physicsBody.setLinearVelocity(new Ammo.btVector3(forceX, 0, forceZ));
+    }
+
     function animate() {
         requestAnimationFrame(animate);
 
-        // Kugel steuern
-        ball.position.x += (touchX - ball.position.x) * 0.1;
-        ball.position.z += (touchY - ball.position.z) * 0.1;
+        const deltaTime = clock.getDelta();
+        world.stepSimulation(deltaTime, 10);
 
-        // Kugel rotieren
-        ball.rotation.x += 0.05;
-        ball.rotation.y += 0.05;
+        // Physik auf 3D-Objekte anwenden
+        updatePhysics();
 
         renderer.render(scene, camera);
     }
 
-    // Touch-Eingaben
-    window.addEventListener('touchstart', handleTouch, false);
-    window.addEventListener('touchmove', handleTouch, false);
+    function updatePhysics() {
+        // Update der Kugel
+        const transform = new Ammo.btTransform();
+        const physicsBody = ball.userData.physicsBody;
+        physicsBody.getMotionState().getWorldTransform(transform);
 
-    function handleTouch(event) {
-        if (event.touches.length === 1) {
-            const touch = event.touches[0];
-            // Bildschirmkoordinaten auf 3D-Koordinaten umrechnen
-            const x = (touch.clientX / window.innerWidth) * 2 - 1;
-            const y = -(touch.clientY / window.innerHeight) * 2 + 1;
-
-            // Raycaster für Touch-Punkt in der Szene
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera({ x, y }, camera);
-            const intersects = raycaster.intersectObject(plane);
-
-            if (intersects.length > 0) {
-                const point = intersects[0].point;
-                touchX = point.x;
-                touchY = point.z;
-            }
-        }
+        const origin = transform.getOrigin();
+        const rotation = transform.getRotation();
+        ball.position.set(origin.x(), origin.y(), origin.z());
+        ball.quaternion.set(rotation.x(), rotation.y(), rotation.z(), rotation.w());
     }
 
-    // Größe bei Fensteränderung anpassen
-    window.addEventListener('resize', () => {
+    function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    animate();
+    }
 </script>
+
 </body>
 </html>
