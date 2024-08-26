@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget mit Hintergrund-Diagramm</title>
+    <title>Leuchtendes Widget mit Liniendiagramm</title>
     <style>
         body {
             margin: 0;
@@ -11,43 +11,45 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #1e1e2f;
+            background-color: #121212; /* Dunkler Hintergrund für besseren Kontrast */
             color: white;
             font-family: Arial, sans-serif;
         }
 
         .widget {
             position: relative;
-            width: 300px;
-            height: 200px;
-            background-color: #2c2c3e;
-            border-radius: 10px;
+            width: 320px;
+            height: 240px;
+            background-color: #2b2b2b; /* Hintergrund des Widgets */
+            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            box-shadow: 0 0 25px rgba(0,0,0,0.6); /* Intensiverer Schatten für besseren Effekt */
             overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: white;
             z-index: 1;
         }
 
         .widget h2 {
             margin: 0;
-            font-size: 18px;
-            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
         }
 
         .widget .price {
-            font-size: 24px;
+            font-size: 28px;
             margin: 10px 0;
         }
 
         .widget .btc-logo {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 10px;
+            width: 50px;
+            height: 50px;
+            margin-bottom: 15px;
+            border-radius: 50%;
+            border: 2px solid #ff9900; /* Border für das Logo */
+            padding: 5px;
         }
 
         .chart-container {
@@ -57,13 +59,13 @@
             width: 100%;
             height: 100%;
             z-index: 0;
-            pointer-events: none;
         }
 
         #myChart {
             width: 100%;
             height: 100%;
             position: absolute;
+            filter: brightness(60%); /* Diagramm-Hintergrund leicht abgedunkelt */
         }
     </style>
 </head>
@@ -84,24 +86,24 @@
 
     // Farbverlauf für den Hintergrund des Diagramms
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(255,183,77,0.8)');
-    gradient.addColorStop(0.5, 'rgba(255,174,0,0.5)');
-    gradient.addColorStop(1, 'rgba(255,174,0,0.1)');
+    gradient.addColorStop(0, 'rgba(255,99,132,0.8)');
+    gradient.addColorStop(0.5, 'rgba(255,159,64,0.5)');
+    gradient.addColorStop(1, 'rgba(255,99,132,0.1)');
 
     const data = {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
         datasets: [{
-            label: 'Krypto-Preise',
+            label: 'BTC-Preise',
             data: [12000, 14000, 12500, 16000, 18000, 15000, 17500, 19000, 21000, 23000, 22000, 24000],
             fill: true,
             backgroundColor: gradient,
-            borderColor: '#ffaf00',
+            borderColor: '#ff9900', /* Leuchtender Rand für den Liniendiagramm */
             borderWidth: 3,
-            pointBackgroundColor: '#ffaf00',
+            pointBackgroundColor: '#ff9900', /* Punktfarbe */
             pointBorderColor: '#ffffff',
             pointHoverRadius: 8,
-            pointHoverBackgroundColor: '#ffaf00',
-            tension: 0.3,
+            pointHoverBackgroundColor: '#ff9900',
+            tension: 0.4, /* Glattere Kurve */
             pointStyle: 'circle'
         }]
     };
@@ -111,6 +113,13 @@
         plugins: {
             legend: {
                 display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return `€${tooltipItem.raw.toFixed(2)}`;
+                    }
+                }
             }
         },
         scales: {
