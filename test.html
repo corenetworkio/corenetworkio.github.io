@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einfaches 3D-Spiel mit Three.js</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    // Szene, Kamera und Renderer erstellen
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Eine Kugel erstellen
+    const geometry = new THREE.SphereGeometry(1, 32, 32);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const ball = new THREE.Mesh(geometry, material);
+    scene.add(ball);
+
+    // Boden erstellen
+    const planeGeometry = new THREE.PlaneGeometry(100, 100);
+    const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 });
+    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    plane.rotation.x = - Math.PI / 2;
+    plane.position.y = -1;
+    scene.add(plane);
+
+    // Hindernisse erstellen
+    const obstacleGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const obstacleMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const obstacles = [];
+    for (let i = 0; i < 5; i++) {
+        const obstacle = new THREE.Mesh(obstacleGeometry, obstacleMaterial);
+        obstacle.position.set(Math.random() * 20 - 10, 0, Math.random() * 20 - 10);
+        scene.add(obstacle);
+        obstacles.push(obstacle);
+    }
+
+    // Kamera-Position
+    camera.position.z = 5;
+
+    // Animation
+    function animate() {
+        requestAnimationFrame(animate);
+
+        // Kugel steuern
+        if (keyboard[87]) ball.position.z -= 0.1; // W
+        if (keyboard[83]) ball.position.z += 0.1; // S
+        if (keyboard[65]) ball.position.x -= 0.1; // A
+        if (keyboard[68]) ball.position.x += 0.1; // D
+
+        // Kugel rotieren
+        ball.rotation.x += 0.05;
+        ball.rotation.y += 0.05;
+
+        renderer.render(scene, camera);
+    }
+
+    // Tastatureingaben
+    const keyboard = {};
+    window.addEventListener('keydown', (e) => {
+        keyboard[e.keyCode] = true;
+    });
+    window.addEventListener('keyup', (e) => {
+        keyboard[e.keyCode] = false;
+    });
+
+    animate();
+</script>
+</body>
+</html>
