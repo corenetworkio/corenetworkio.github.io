@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget mit Hintergrund-Diagramm</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #1e1e2f;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .widget {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background-color: #333;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            z-index: 1;
+            color: white;
+        }
+
+        .widget h2 {
+            margin: 0 0 10px;
+        }
+
+        .chart-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #myChart {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+
+<div class="widget">
+    <h2>Widget Titel</h2>
+    <p>Hier ist der Inhalt des Widgets.</p>
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    // Farbverlauf für den Hintergrund des Diagramms
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(58,123,213,0.8)');
+    gradient.addColorStop(0.5, 'rgba(0,210,255,0.5)');
+    gradient.addColorStop(1, 'rgba(0,210,255,0.1)');
+
+    const data = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+        datasets: [{
+            label: 'Krypto-Preise',
+            data: [12000, 14000, 12500, 16000, 18000, 15000, 17500, 19000, 21000, 23000, 22000, 24000],
+            fill: true,
+            backgroundColor: gradient,
+            borderColor: '#ffffff',
+            borderWidth: 2,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#ffffff',
+            pointHoverRadius: 6,
+            pointHoverBackgroundColor: '#ffffff',
+            tension: 0.3
+        }]
+    };
+
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                display: false,
+                grid: {
+                    display: false
+                }
+            },
+            y: {
+                display: false,
+                grid: {
+                    display: false
+                }
+            }
+        },
+        layout: {
+            padding: 10
+        }
+    };
+
+    const myChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
+    });
+</script>
+
+</body>
+</html>
