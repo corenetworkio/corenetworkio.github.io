@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leuchtendes Liniendiagramm</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #1e1e2f;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        #myChart {
+            max-width: 90%;
+            max-height: 90%;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="myChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(58,123,213,1)');
+    gradient.addColorStop(1, 'rgba(0,210,255,0.3)');
+
+    const data = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+        datasets: [{
+            label: 'Krypto-Preise',
+            data: [12000, 14000, 12500, 16000, 18000, 15000, 17500, 19000, 21000, 23000, 22000, 24000],
+            fill: true,
+            backgroundColor: gradient,
+            borderColor: '#ffffff',
+            borderWidth: 2,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: 'rgba(255,255,255,0.5)',
+            pointHoverRadius: 8,
+            pointHoverBackgroundColor: '#ffffff',
+            tension: 0.4
+        }]
+    };
+
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'white'
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    color: 'rgba(255,255,255,0.1)',
+                },
+                ticks: {
+                    color: 'white'
+                }
+            },
+            y: {
+                grid: {
+                    color: 'rgba(255,255,255,0.1)',
+                },
+                ticks: {
+                    color: 'white'
+                }
+            }
+        },
+        animation: {
+            tension: {
+                duration: 1000,
+                easing: 'easeInOutQuad',
+                from: 0.5,
+                to: 0.4,
+                loop: true
+            }
+        }
+    };
+
+    const myChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
+    });
+</script>
+
+</body>
+</html>
