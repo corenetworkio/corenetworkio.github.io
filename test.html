@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Einfaches 3D-Spiel mit Three.js</title>
+    <title>3D-Spiel für Mobilgeräte</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
@@ -16,7 +16,7 @@
     // Szene, Kamera und Renderer erstellen
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
@@ -48,15 +48,17 @@
     // Kamera-Position
     camera.position.z = 5;
 
+    // Touch-Input Variablen
+    let touchX = 0;
+    let touchY = 0;
+
     // Animation
     function animate() {
         requestAnimationFrame(animate);
 
         // Kugel steuern
-        if (keyboard[87]) ball.position.z -= 0.1; // W
-        if (keyboard[83]) ball.position.z += 0.1; // S
-        if (keyboard[65]) ball.position.x -= 0.1; // A
-        if (keyboard[68]) ball.position.x += 0.1; // D
+        ball.position.x += (touchX - ball.position.x) * 0.1;
+        ball.position.z += (touchY - ball.position.z) * 0.1;
 
         // Kugel rotieren
         ball.rotation.x += 0.05;
@@ -65,13 +67,35 @@
         renderer.render(scene, camera);
     }
 
-    // Tastatureingaben
-    const keyboard = {};
-    window.addEventListener('keydown', (e) => {
-        keyboard[e.keyCode] = true;
-    });
-    window.addEventListener('keyup', (e) => {
-        keyboard[e.keyCode] = false;
+    // Touch-Eingaben
+    window.addEventListener('touchstart', handleTouch, false);
+    window.addEventListener('touchmove', handleTouch, false);
+
+    function handleTouch(event) {
+        if (event.touches.length === 1) {
+            const touch = event.touches[0];
+            // Bildschirmkoordinaten auf 3D-Koordinaten umrechnen
+            const x = (touch.clientX / window.innerWidth) * 2 - 1;
+            const y = -(touch.clientY / window.innerHeight) * 2 + 1;
+
+            // Raycaster für Touch-Punkt in der Szene
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera({ x, y }, camera);
+            const intersects = raycaster.intersectObject(plane);
+
+            if (intersects.length > 0) {
+                const point = intersects[0].point;
+                touchX = point.x;
+                touchY = point.z;
+            }
+        }
+    }
+
+    // Größe bei Fensteränderung anpassen
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
     animate();
