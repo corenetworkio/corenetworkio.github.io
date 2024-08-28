@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krypto-Wallet</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #111111;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .wallet-container {
+            width: 300px;
+            padding: 20px;
+            background-color: #2e2e2e;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .header .icons {
+            display: flex;
+            gap: 10px;
+        }
+        .wallet-balance {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .wallet-balance .balance {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .wallet-balance .change {
+            color: #4CAF50;
+            font-size: 1rem;
+        }
+        .crypto-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .crypto-info .name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .crypto-info .name img {
+            width: 20px;
+            height: 20px;
+        }
+        .crypto-info .value {
+            font-weight: bold;
+        }
+        .chart {
+            height: 100px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .chart::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, #3a3a3a, #2e2e2e);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wallet-container">
+        <div class="header">
+            <div class="title">Wallet</div>
+            <div class="icons">
+                <span>🔔</span>
+                <span>⚙️</span>
+            </div>
+        </div>
+
+        <div class="wallet-balance">
+            <div class="balance">$6,287.83</div>
+            <div class="change">⬆ 12.34% (+$342.04)</div>
+        </div>
+
+        <div class="chart"></div>
+
+        <div class="crypto-info">
+            <div class="name">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="Bitcoin">
+                Bitcoin
+            </div>
+            <div class="value">$2,258.93</div>
+        </div>
+
+        <div class="crypto-info">
+            <div class="name">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Ethereum-icon-purple.svg" alt="Ethereum">
+                Ethereum
+            </div>
+            <div class="value">$1,858.08</div>
+        </div>
+    </div>
+
+</body>
+</html>
