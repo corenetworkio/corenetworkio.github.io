@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethereum Wallet Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.5.4/dist/ethers.min.js"></script>
+</head>
+<body>
+    <h1>Ethereum Wallet Generator and Balance Checker</h1>
+    <button id="generateWallet">Generate Wallet</button>
+    <p id="walletInfo"></p>
+    <p id="balanceInfo"></p>
+
+    <script>
+        document.getElementById('generateWallet').addEventListener('click', async function() {
+            // Erstellen eines neuen Ethereum-Wallets
+            const wallet = ethers.Wallet.createRandom();
+
+            // Anzeigen der Adresse und des privaten Schlüssels
+            const walletInfo = `Address: ${wallet.address}<br>Private Key: ${wallet.privateKey}`;
+            document.getElementById('walletInfo').innerHTML = walletInfo;
+
+            // Verbinden mit dem Ethereum-Netzwerk (hier das Mainnet)
+            const provider = ethers.getDefaultProvider('mainnet');
+
+            // Abfragen des Guthabens der generierten Adresse
+            const balance = await provider.getBalance(wallet.address);
+
+            // Anzeigen des Guthabens in Ether
+            const balanceInEther = ethers.utils.formatEther(balance);
+            document.getElementById('balanceInfo').innerHTML = `Balance: ${balanceInEther} ETH`;
+        });
+    </script>
+</body>
+</html>
