@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klaytn Wallet Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Klaytn Wallet Generator</h1>
+            <p>Create your Klaytn wallet with a single click and manage it securely.</p>
+        </header>
+
+        <button id="generateButton" class="btn">Generate Wallet</button>
+
+        <div class="wallet-info">
+            <h2>Your Wallet Information</h2>
+            <p><strong>Wallet Name:</strong> <input type="text" id="walletName" placeholder="My Wallet"></p>
+            <p><strong>Address:</strong> <span id="address">N/A</span></p>
+            <p><strong>Private Key:</strong> <span id="privateKey">N/A</span></p>
+            <p><strong>Public Key:</strong> <span id="publicKey">N/A</span></p>
+        </div>
+
+        <div class="actions">
+            <button id="saveWallet" class="btn" disabled>Save Wallet</button>
+            <button id="clearStorage" class="btn red">Clear Stored Wallet</button>
+        </div>
+
+        <footer>
+            <p>Ensure to save your private key securely. Never share it with anyone!</p>
+        </footer>
+    </div>
+
+    <script src="https://unpkg.com/caver-js@1.8.0/dist/caver-js.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+    
