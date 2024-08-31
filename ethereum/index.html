@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethereum Wallet Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ethereum Wallet Generator</h1>
+            <p>Create, manage, and transact with your Ethereum wallet.</p>
+        </header>
+
+        <div class="actions">
+            <button id="generateButton" class="btn">Generate Wallet</button>
+            <button id="connectButton" class="btn">Connect Wallet</button>
+        </div>
+
+        <div class="wallet-info">
+            <h2>Your Wallet Information</h2>
+            <p><strong>Wallet Name:</strong> <input type="text" id="walletName" placeholder="My Wallet"></p>
+            <p><strong>Address:</strong> <span id="address">N/A</span></p>
+            <p><strong>Private Key:</strong> <span id="privateKey">N/A</span></p>
+            <p><strong>Balance:</strong> <span id="balance">N/A</span> ETH</p>
+        </div>
+
+        <div class="transaction-section">
+            <h2>Send Ethereum</h2>
+            <p><strong>Recipient Address:</strong> <input type="text" id="recipient" placeholder="0x..."></p>
+            <p><strong>Amount (ETH):</strong> <input type="number" id="amount" placeholder="0.1"></p>
+            <button id="sendTransaction" class="btn">Send Transaction</button>
+        </div>
+
+        <div class="swap-section">
+            <h2>Swap Tokens</h2>
+            <p><strong>From Token:</strong> <input type="text" id="fromToken" placeholder="ETH"></p>
+            <p><strong>To Token:</strong> <input type="text" id="toToken" placeholder="DAI"></p>
+            <p><strong>Amount:</strong> <input type="number" id="swapAmount" placeholder="0.1"></p>
+            <button id="swapTokens" class="btn">Swap Tokens</button>
+        </div>
+
+        <div class="wallet-actions">
+            <button id="saveWallet" class="btn" disabled>Save Wallet</button>
+            <button id="clearStorage" class="btn red">Clear Stored Wallet</button>
+        </div>
+
+        <footer>
+            <p>Ensure to save your private key securely. Never share it with anyone!</p>
+        </footer>
+    </div>
+
+    <!-- Einbindung von Ethers.js über ein CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
