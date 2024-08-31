@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klaytn Wallet Generator</title>
+    <script src="https://unpkg.com/caver-js@1.8.0/dist/caver-js.min.js"></script>
+</head>
+<body>
+    <h1>Klaytn Wallet Generator</h1>
+    <button onclick="generateWallet()">Generate Wallet</button>
+
+    <h2>Your Klaytn Wallet</h2>
+    <p><strong>Address:</strong> <span id="address"></span></p>
+    <p><strong>Private Key:</strong> <span id="privateKey"></span></p>
+
+    <script>
+        async function generateWallet() {
+            // Erstellen einer neuen Instanz von Caver.js
+            const caver = new Caver();
+
+            // Generiere ein neues Wallet (Schlüsselpaar)
+            const wallet = caver.klay.accounts.create();
+
+            // Zeige die Adresse und den privaten Schlüssel an
+            document.getElementById('address').textContent = wallet.address;
+            document.getElementById('privateKey').textContent = wallet.privateKey;
+
+            // Speichere das Wallet lokal (Optional)
+            localStorage.setItem('klaytnAddress', wallet.address);
+            localStorage.setItem('klaytnPrivateKey', wallet.privateKey);
+        }
+
+        // Funktion, um das Wallet beim Laden der Seite wiederherzustellen
+        function loadWallet() {
+            const address = localStorage.getItem('klaytnAddress');
+            const privateKey = localStorage.getItem('klaytnPrivateKey');
+
+            if (address && privateKey) {
+                document.getElementById('address').textContent = address;
+                document.getElementById('privateKey').textContent = privateKey;
+            }
+        }
+
+        // Beim Laden der Seite wird das Wallet wiederhergestellt, falls vorhanden
+        window.onload = loadWallet;
+    </script>
+</body>
+</html>
