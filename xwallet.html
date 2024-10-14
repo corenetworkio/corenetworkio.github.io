@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eWallet App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #E1E2F6;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .ewallet {
+      background: linear-gradient(135deg, #4F4ED4, #9B90E6);
+      width: 400px;
+      padding: 20px;
+      border-radius: 20px;
+      color: white;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .balance {
+      text-align: center;
+      font-size: 40px;
+      margin: 10px 0;
+    }
+    .currency-tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+    .currency-tabs div {
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      text-align: center;
+    }
+    .actions div {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      cursor: pointer;
+    }
+    .activity {
+      margin-top: 20px;
+    }
+    .activity-title {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .history-item {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div class="ewallet">
+    <div class="balance">$250.67</div>
+    <div class="currency-tabs">
+      <div>USD</div>
+      <div>EUR</div>
+      <div>GBP</div>
+      <div>PLN</div>
+      <div>All</div>
+    </div>
+    <div class="actions">
+      <div>Top-up</div>
+      <div>Transfer</div>
+      <div>Withdraw</div>
+      <div>Exchange</div>
+    </div>
+    <div class="activity">
+      <div class="activity-title">Wallet Activity</div>
+      <div class="history-item">
+        <span>Currency Exchange</span>
+        <span>+ $140</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript to dynamically update or add more functionality
+    document.querySelector('.balance').textContent = "$250.67";
+
+    // Event listeners for buttons
+    const actions = document.querySelectorAll('.actions div');
+    actions.forEach(action => {
+      action.addEventListener('click', () => {
+        alert(`${action.textContent} action clicked!`);
+      });
+    });
+  </script>
+</body>
+</html>
